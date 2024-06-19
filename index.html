@@ -3,19 +3,25 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<!--Bootstrap link to CSS-->
+		
+	<!--Bootstrap link to CSS-->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-		<!--Chessboardjs CSS-->
+		
+	<!--Chessboardjs CSS-->
 		<link rel="stylesheet" href="chessboardjs-1.0.0/css/chessboard-1.0.0.css">
 		<link rel="stylesheet" href="chessboardjs-1.0.0/css/chessboard-1.0.0.min.css">
 
 		<title>WAPH-Andrew Towns</title>
-		<!--Flag Counter-->
+		
+	<!--Flag Counter-->
 		<a href="https://info.flagcounter.com/X51P"><img src="https://s11.flagcounter.com/count2/X51P/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
 	</head>
+	
 	<body>
-		<!--Jquery Include-->
+		
+	<!--Jquery Include-->
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+		
 		<!--Chessboard.js-->
 		<script src="chessboardjs-1.0.0/js/chessboard-1.0.0.js"></script>
 		<script src="chessboardjs-1.0.0/js/chessboard-1.0.0.min.js"></script>
@@ -25,6 +31,7 @@
 			<h2>Front-end Web Development Lab</h2>
 			<h3>Instructor: Dr. Phu Phung</h3>
 		</div>
+
 		<div id="menubar">
 			<h3>Student: Andrew Towns</h3>
 			<div id="email" onclick="showhideEmail()">Show my email</div>
@@ -33,19 +40,21 @@
 			<div id="digit-clock"></div>
 			<script>
 				function displayTime() {
-					document.getElementById('digit-clock').innerHTML = "Current time: " + new Date();
+					$("#digit-clock").html("Current time: " + new Date());
 				}
 				setInterval(displayTime, 500);
 			</script>
 			<canvas id="analog-clock" width="150" height="150" style="background-color:#999"></canvas>
-			<!--Clock Include-->
+		<!--Clock Include-->
 			<script src="https://waph-uc.github.io/clock.js"></script>
-
-			<div id="board2" style="width: 200px"></div>
-			<button id="startBtn">Start Position</button>
-			<button id="clearBtn">Clear Board</button>
-
-			<!-- JavaScript Functions -->
+		<!--Chessboard-->
+			<div id="chessapi">Using Chess.com puzzles API</div>
+			<div id="board2" style="width: 400px"></div>
+			<details>
+				<summary>Answer</summary>
+				<div id="answer"></div>
+			</details>
+		<!-- JavaScript Functions -->
 			<script>
 				// Clock Code
 				var canvas = document.getElementById("analog-clock");
@@ -61,119 +70,69 @@
 					drawTime(ctx, radius);
 				}
 
-				//Chess board
-
-				var board2 = Chessboard('board2', {
-				  draggable: true,
-				  dropOffBoard: 'trash',
-				  sparePieces: true
-				})
-
-				$('#startBtn').on('click', board2.start)
-				$('#clearBtn').on('click', board2.clear)
 
 				function encodeInput (input) {
 					const encoded = document.createElement('div');
 					encoded.innerText = input;
 					return encoded.innerHTML;
 				}
-				function getEcho() {
-					var input = document.getElementById("data").value;
-					if (input.length == 0) {
-						return;
-					}
-					var xhttp = new XMLHttpRequest();
-					xhttp.onreadystatechange = function() {
-						if (this.readyState == 4 && this.status == 200) {
-							console.log("Recieved data=" + xhttp.responseText);
-							document.getElementById("response").innerText="Response from server:" + encodeInput(xhttp.responseText);
-							//code to show the data
-						}
-					}
-					xhttp.open("GET", "echo.php?data="+input, true);
-					//code to create an Ajax request
-					xhttp.send(); //code to send the request
-					document.getElementById("data").value="";
-				}
+
 				
-				function jQueryAjax() {
-					//simple validation
-					var input = $("#data").val();
-					if (input.length == 0) return;
-
-					$.get("echo.php?data="+input, 
-						function(result) {
-							$("#response").html("Response from server:" + encodeInput(result));
+				function jokeApi() {
+					$.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,racist,sexist,explicit", function(result) {
+						//check for null
+						if(result.type.length == 0) {
+							return;
 						}
-					);
-					$("#data").val("");
-				}
-				function jQueryAjaxPost() {
-					//simple validation
-					var input = $("#data").val();
-					if (input.length == 0) return;
-
-					$.post("echo.php",{data: input}, 
-						function(result) {
-							$("#response").html("Response from server:" + encodeInput(result));
+						if(result.type == "twopart") {
+							$("#response").html("Random joke using jokeapi.dev: " + encodeInput(result.setup) + " \n " + encodeInput(result.delivery))
 						}
-					);
-					$("#data").val("");
+						else {
+							$("#response").html("Random joke using jokeapi.dev: " + encodeInput(result.joke));
+						}
+					})
 				}
-				$.get("https://v2.jokeapi.dev/joke/Programming?type=single", function(result) {
-					//check for null
-					if (result.joke.length == 0) {
-						return;
-					}
-					$("#response").html("A programming joke of the day: " + encodeInput(result.joke));
-				})
+				jokeApi();
+				setInterval(jokeApi, 60000);
+
+
+				function chessApi() {
+					$.get("https://api.chess.com/pub/puzzle/random", function(result) {
+						if(result.length == 0) {
+							return;
+						}
+						//Chess board
+						var pgn = result.pgn.split(/\r?\n/);
+						var answer = pgn[pgn.length-2];
+						console.log(result.pgn);
+						var board2 = Chessboard('board2', {
+						  draggable: false,
+						  dropOffBoard: 'trash',
+  						  position: result.fen,
+						  sparePieces: false
+						})
+						if((/w/).test(result.fen)) {
+							$("#chessapi").html("Using Chess.com puzzles API: " + "White to move")
+						}
+						else {
+							$("#chessapi").html("Using Chess.com puzzles API: " + "Black to move")
+						}
+						if(answer.length == 0){
+							$("#answer").html(encodeInput(result.pgn));
+						}
+						else {
+							$("#answer").html(encodeInput(answer));
+						}
+					})
+				}
+				chessApi();
 			</script>
 		</div>
 
+		<div id="response"></div>
 
 
-		<b>Interactions with forms</b>
-		<!-- HTTP GET Form -->
-		<div>
-			<i>Form with an HTTP GET Request</i>
-
-			<form action="/echo.php" method="GET">
-				Your input: <input name="data" required pattern="\w+">
-				<input type="submit" value="Submit">
-			</form>
-		</div>
-		<!-- HTTP POST Form -->
-		<div>
-			<i>Form with an HTTP POST Request</i>
-
-			<form action="/echo.php" method="POST" name="echo_post">
-				Your input: <input name="data" required pattern="\w+" onkeypress="console.log('You have pressed a key')">
-				<input type="submit" value="Submit">
-			</form>
-		</div>
-		<!-- Ajax Form -->
-		<div>
-			<i>Ajax requests</i><br>
-
-			  Your input:
-			  <input name="data"
-			    	 onkeypress="console.log('You have pressed a key')" required pattern="\w+" id="data">
-			  <input class="button round" type="button" value="Ajax Echo" onclick="getEcho()">
-			  <input class="button round" type="button" value="jQuery Ajax GET Echo" onclick="jQueryAjax()">
-			  <input class="button round" type="button" value="jQuery Ajax POST Echo" onclick="jQueryAjaxPost()">
-			 <div id="response"></div>
-
-		</div>
-		<!-- JavaScript inline -->
-		<div id="main">
-			<b>Experiments with JavaScript code</b><br>
-			<i>Inlined JavaScript</i>
-			<div id="date" onclick="document.getElementById('date').innerHTML= Date()">
-				Click here to show Date()
-			</div>
-		</div>
-
-		<!--Boostrap JS link-->
+	<!--Boostrap JS link-->
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 	</body>

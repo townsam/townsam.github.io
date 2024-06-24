@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+	<!--Bootstrap link to CSS-->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+		
+	<!--Chessboardjs CSS-->
+		<link rel="stylesheet" href="chessboardjs-1.0.0/css/chessboard-1.0.0.css">
+		<link rel="stylesheet" href="chessboardjs-1.0.0/css/chessboard-1.0.0.min.css">
+
+		<title>WAPH-Andrew Towns</title>
+		
+	<!--Flag Counter-->
+		<a href="https://info.flagcounter.com/X51P"><img src="https://s11.flagcounter.com/count2/X51P/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+
+		<style>
+			.bg-1 {
+				background-color: #1abc9c; /* Green */
+				color: #ffffff;
+			}
+		</style>
+	</head>
+	
+	<body>
+	<!--Jquery Include-->
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+		
+	<!--Chessboard.js-->
+		<script src="chessboardjs-1.0.0/js/chessboard-1.0.0.js"></script>
+		<script src="chessboardjs-1.0.0/js/chessboard-1.0.0.min.js"></script>
+	<!--Clock Include-->
+		<script src="https://waph-uc.github.io/clock.js"></script>
+
+		<div class="container-fluid bg-1 text-center" id="top">
+			<h1 style="color:black;">Web Application Programming and Hacking</h1>
+			<h2>Front-end Web Development Lab</h2>
+			<h3>Instructor: Dr. Phu Phung</h3>
+		</div>
+
+		<div id="menubar">
+			<h3>Student: Andrew Towns</h3>
+			<div id="email" onclick="showhideEmail()">Show my email</div>
+			<script src="email.js"></script>
+			<img src="images/headshot.jpg" alt="My headshot" width="50">
+			<div id="digit-clock"></div>
+			<script>
+				function displayTime() {
+					$("#digit-clock").html("Current time: " + new Date());
+				}
+				setInterval(displayTime, 500);
+			</script>
+			<canvas id="analog-clock" width="150" height="150" style="background-color:#999"></canvas>
+		
+
+		<!--Chessboard-->
+			<div id="chessapi">Using Chess.com puzzles API</div>
+			<div id="board2" style="width: 400px"></div>
+			<details>
+				<summary>Answer</summary>
+				<div id="answer"></div>
+			</details>
+		<!-- JavaScript Functions -->
+			<script>
+				// Clock Code
+				var canvas = document.getElementById("analog-clock");
+				var ctx = canvas.getContext("2d");
+				var radius = canvas.height / 2;
+				ctx.translate(radius, radius);
+				radius = radius * 0.9;
+				setInterval(drawClock, 1000);
+
+				function drawClock() {
+					drawFace(ctx, radius);
+					drawNumbers(ctx, radius);
+					drawTime(ctx, radius);
+				}
+
+
+				function encodeInput (input) {
+					const encoded = document.createElement('div');
+					encoded.innerText = input;
+					return encoded.innerHTML;
+				}
+
+				
+				function jokeApi() {
+					$.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,racist,sexist,explicit", function(result) {
+						//check for null
+						if(result.type.length == 0) {
+							return;
+						}
+						if(result.type == "twopart") {
+							$("#response").html("Random joke using jokeapi.dev: " + encodeInput(result.setup) + " \n " + encodeInput(result.delivery))
+						}
+						else {
+							$("#response").html("Random joke using jokeapi.dev: " + encodeInput(result.joke));
+						}
+					})
+				}
+				jokeApi();
+				setInterval(jokeApi, 60000);
+
+
+				function chessApi() {
+					$.get("https://api.chess.com/pub/puzzle/random", function(result) {
+						if(result.length == 0) {
+							return;
+						}
+						//Chess board
+						var pgn = result.pgn.split(/\r?\n/);
+						var answer = pgn[pgn.length-2];
+						console.log(result.pgn);
+						var board2 = Chessboard('board2', {
+						  draggable: false,
+						  dropOffBoard: 'trash',
+  						  position: result.fen,
+						  sparePieces: false
+						})
+						if((/w/).test(result.fen)) {
+							$("#chessapi").html("Using Chess.com puzzles API: " + "White to move")
+						}
+						else {
+							$("#chessapi").html("Using Chess.com puzzles API: " + "Black to move")
+						}
+						if(answer.length == 0){
+							$("#answer").html(encodeInput(result.pgn));
+						}
+						else {
+							$("#answer").html(encodeInput(answer));
+						}
+					})
+				}
+				chessApi();
+
+				function setCookie(cname,cvalue,exdays) {
+				  	const d = new Date();
+				  	d.setTime(d.getTime() + (exdays*24*60*60*1000));
+				  	let expires = "expires=" + d.toUTCString();
+			  		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+				}
+				function getCookie(cname) {
+				  	let name = cname + "=";
+				  	let decodedCookie = decodeURIComponent(document.cookie);
+				  	let ca = decodedCookie.split(';');
+				  	for(let i = 0; i < ca.length; i++) {
+				    	let c = ca[i];
+				    	while (c.charAt(0) == ' ') {
+				      	c = c.substring(1);
+				    	}
+				    	if (c.indexOf(name) == 0) {
+				      		return c.substring(name.length, c.length);
+				    	}
+				  	}
+				  return "";
+				}
+				function checkCookie() {
+					var lastvisit = getCookie("lastvisit");
+					if(lastvisit != "") {
+						alert("Welcome back! Last visit was: " + lastvisit);
+					}
+					else {
+						const d = new Date();
+						d.setTime(d.getTime());
+						setCookie("lastvisit", d.toUTCString(), 365);
+					}
+				}
+				checkCookie();
+			</script>
+		</div>
+
+		<div id="response"></div>
+
+
+	<!--Boostrap JS link-->
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+	</body>
+</html>

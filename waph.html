@@ -1,25 +1,6 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<!-- CSS Styles -->
-		<link rel="stylesheet" href="https://waph-uc.github.io/style1.css">
-		<style>
-			.button {
-				background-color: #4CAF50;
-				border: none;
-				color: white;
-				padding: 5px;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-				font-size: 12px;
-				margin: 4px 2px;
-				cursor: pointer;
-			}
-			.round {border-radius: 8px;}
-			#response {background-color: #ff9800;}
-		</style>
-
 		<meta charset="utf-8"/>
 		<title>WAPH-Andrew Towns</title>
 	</head>
@@ -34,135 +15,40 @@
 			<div id="email" onclick="showhideEmail()">Show my email</div>
 			<script src="email.js"></script>
 			<img src="images/headshot.jpg" alt="My headshot" width="50">
-			<div id="digit-clock"></div>
-			<script>
-				function displayTime() {
-					document.getElementById('digit-clock').innerHTML = "Current time: " + new Date();
-				}
-				setInterval(displayTime, 500);
-			</script>
-			<canvas id="analog-clock" width="150" height="150" style="background-color:#999"></canvas>
-			<script src="https://waph-uc.github.io/clock.js"></script>
-			<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-			<!-- JavaScript Functions -->
-			<script>
-				var canvas = document.getElementById("analog-clock");
-				var ctx = canvas.getContext("2d");
-				var radius = canvas.height / 2;
-				ctx.translate(radius, radius);
-				radius = radius * 0.9;
-				setInterval(drawClock, 1000);
-
-				function drawClock() {
-					drawFace(ctx, radius);
-					drawNumbers(ctx, radius);
-					drawTime(ctx, radius);
-				}
-				function getEcho() {
-					var input = document.getElementById("data").value;
-					if (input.length == 0) {
-						return;
-					}
-					var xhttp = new XMLHttpRequest();
-					xhttp.onreadystatechange = function() {
-						if (this.readyState == 4 && this.status == 200) {
-							console.log("Recieved data=" + xhttp.responseText);
-							document.getElementById("response").innerText="Response from server:" + xhttp.responseText;
-							//code to show the data
-						}
-					}
-					xhttp.open("GET", "echo.php?data="+input, true);
-					//code to create an Ajax request
-					xhttp.send(); //code to send the request
-					document.getElementById("data").value="";
-				}
-				
-				function jQueryAjax() {
-					var input = $("#data").val();
-					if (input.length == 0) return;
-					$.get("echo.php?data="+input, 
-						function(result) {
-							$("#response").html("Response from server:" + result);
-						}
-					);
-					$("#data").val("");
-				}
-				function jQueryAjaxPost() {
-					var input = $("#data").val();
-					if (input.length == 0) return;
-					$.post("echo.php",{data: input}, 
-						function(result) {
-							$("#response").html("Response from server:" + result);
-						}
-					);
-					$("#data").val("");
-				}
-				$.get("https://v2.jokeapi.dev/joke/Programming?type=single", function(result) {
-					$("#response").html("A programming joke of the day: " + result.joke);
-				})
-				async function guessAge(name) {
-					const response = await fetch("https://api.agify.io/?name="+name);
-					const result = await response.json();
-					$("#response").html("Hi " + name + ", your age should be " + result.age);
-				}
-			</script>
+			<h3>Repository Information</h3>
+			<p>Respository's URL: <a href="https://github.com/townsam/waph-townsam.git">https://github.com/townsam/waph-townsam.git</a></p>
 		</div>
-
-		<b>Interactions with forms</b>
-
-		<!-- HTTP GET Form -->
-		<div>
-			<i>Form with an HTTP GET Request</i>
-
-			<form action="/echo.php" method="GET">
-				Your input: <input name="data">
-				<input type="submit" value="Submit">
-			</form>
-
-		</div>
-
-		<!-- HTTP POST Form -->
-		<div>
-			<i>Form with an HTTP POST Request</i>
-
-			<form action="/echo.php" method="POST" name="echo_post">
-				Your input: <input name="data" onkeypress="console.log('You have pressed a key')">
-				<input type="submit" value="Submit">
-			</form>
-
-		</div>
-		<!-- Ajax Form -->
-		<div>
-			<i>Ajax requests</i><br>
-
-			  Your input:
-			  <input name="data"
-			    	 onkeypress="console.log('You have pressed a key')" id="data">
-			  <input class="button round" type="button" value="Ajax Echo" onclick="getEcho()">
-			  <input class="button round" type="button" value="jQuery Ajax GET Echo" onclick="jQueryAjax()">
-			  <input class="button round" type="button" value="jQuery Ajax POST Echo" onclick="jQueryAjaxPost()">
-			  <input class="button round" type="button" value="Agify API" onclick="guessAge($('#data').val())">
-			 <div id="response"></div>
-
-		</div>
-		<!-- JavaScript inline -->
-		<div id="main">
-			<p>A simple HTML Page</p>
-			Using the <a href="httpls://www.w3schools.com/html"> W3Schools template</a>
-
-			<hr>
-			
-			<b>Experiments with JavaScript code</b><br>
-
-			<i>Inlined JavaScript</i>
-
-			<div id="date" onclick="document.getElementById('date').innerHTML= Date()">
-				Click here to show Date()
+		<div id="activities">
+			<h3>Course Overview</h3>
+			<div>
+				<p>Web Application Programming and Hacking, or WAPH, is a course designed to teach basic web design concepts, common vunerabilities, and how to prevent them through the use of hands-on activities and projects. These activities are as follows: </p>
 			</div>
-			
+			<h3>Labs</h3>
+			<div>
+				<p>Labs are assignments geared toward introducing new concepts in the form of walkthrough activities.</p>
+				<li>Lab 0 - Development Environment Setup</li>
+				<li>Lab 1 - Foundations of the Web</li>
+				<li>Lab 2 - Front-end Web Development</li>
+				<li>Lab 3 - Secure Web Application Development in PHP/MySQL</li>
+				<li>Lab 4 - A Secure Login System with Session Authentication</li>
+			</div>
+			<h3>Hackathons</h3>
+			<div>
+				<p>Hackathons are assignments that involve trying to exploit some vulnerability on a web application designed by the instructor.</p>
+				<li>Hackathon 1 - Cross-site Scripting Attacks and Defenses</li>
+				<li>Hackathon 2 - SQL Injection Attacks</li>
+				<li>Hackathon 3</li>
+			</div>
+			<h3>Individual Projects</h3>
+			<div>
+				<p>Individual Projects are assignments that allow the students more freedom to apply the concepts learned in class, as well as self-taught concepts. One example would be creating a resume website and using open source JS frameworks to implement different features in the webpage.</p>
+				<li>Individual Project 1</li>
+			</div>
+			<h3>Team Project</h3>
+			<div>
+				<p>The Team Project is an opportunity to work in a small group and use agile development techniques to design a web application.</p>
+				<li>Team Project</li>
+			</div>
 		</div>
-
-
-
 	</body>
 </html>

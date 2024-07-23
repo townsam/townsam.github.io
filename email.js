@@ -1,12 +1,12 @@
 var shown = false;
 function showhideEmail(){
 	if (shown){
-		document.getElementById('email').innerHTML = "Show my email";
+		$('#email').html("Show my email");
 		shown = false;
 	}
 	else {
 		var myemail = "<a href='mailto:townsam" + "@" + "mail.uc.edu'>townsam" + "@" + "mail.uc.edu</a>";
-		document.getElementById('email').innerHTML= myemail;
+		$('#email').html(myemail);
 		shown = true;
 	}
 }
